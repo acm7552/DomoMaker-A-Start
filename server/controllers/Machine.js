@@ -1,9 +1,9 @@
 const models = require('../models');
 
-const Domo = models.Domo;
+const Machine = models.Machine;
 
 const makerPage = (req, res) => {
-  Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
+  Machine.MachineModel.findByOwner(req.session.account._id, (err, docs) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occured' });
@@ -13,44 +13,43 @@ const makerPage = (req, res) => {
   });
 };
 
-const makeDomo = (req, res) => {
+const makeMachine = (req, res) => {
   if (!req.body.name || !req.body.age || !req.body.skill) {
     return res.status(400).json({ error: 'All fields are required.' });
   }
 
 
-  const domoData = {
+  const MachineData = {
     name: req.body.name,
     age: req.body.age,
     owner: req.session.account._id,
     skill: req.body.skill,
   };
-  // console.log("domoData.skill=" + domoData.skill);
 
-  const newDomo = new Domo.DomoModel(domoData);
-  console.log(`new skill = ${newDomo.skill}`);
 
-  const domoPromise = newDomo.save();
+  const newMachine = new Machine.MachineModel(MachineData);
 
-  domoPromise.then(() => res.json({ redirect: '/maker' }));
+  const MachinePromise = newMachine.save();
 
-  domoPromise.catch((err) => {
+  MachinePromise.then(() => res.json({ redirect: '/maker' }));
+
+  MachinePromise.catch((err) => {
     console.log(err);
     if (err.code === 11000) {
-      return res.status(400).json({ error: 'Domo already exists.' });
+      return res.status(400).json({ error: 'Machine already exists.' });
     }
 
     return res.status(400).json({ error: 'An error occurred' });
   });
-  // console.log("domoPromise.age=" + domoPromise.age);
-  return domoPromise;
+
+  return MachinePromise;
 };
 
-const getDomos = (request, response) => {
+const getMachines = (request, response) => {
   const req = request;
   const res = response;
 
-  return Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
+  return Machine.MachineModel.findByOwner(req.session.account._id, (err, docs) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ errpr: 'An error occured' });
@@ -61,5 +60,5 @@ const getDomos = (request, response) => {
 };
 
 module.exports.makerPage = makerPage;
-module.exports.getDomos = getDomos;
-module.exports.make = makeDomo;
+module.exports.getMachines = getMachines;
+module.exports.makeMachine = makeMachine;

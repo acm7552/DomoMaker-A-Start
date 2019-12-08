@@ -3,14 +3,14 @@ mongoose.Promise = global.Promise;
 const _ = require('underscore');
 
 
-let DomoModel = {};
+let MachineModel = {};
 
 // mongoose.Types.ObjectID is a function
 // Converts string ID to real mongo ID
 const convertId = mongoose.Types.ObjectId;
 const setName = (name) => _.escape(name).trim();
 
-const DomoSchema = new mongoose.Schema({
+const MachineSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -40,23 +40,43 @@ const DomoSchema = new mongoose.Schema({
     min: 0,
     required: true,
   },
+  pieces: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
+  matter: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
+  rate: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
+
+
 });
 
-DomoSchema.statics.toAPI = (doc) => ({
+MachineSchema.statics.toAPI = (doc) => ({
   name: doc.name,
   age: doc.age,
   skill: doc.skill,
+  pieces: doc.pieces,
+  matter: doc.matter,
+  rate: doc.rate,
 });
 
-DomoSchema.statics.findByOwner = (ownerID, callback) => {
+MachineSchema.statics.findByOwner = (ownerID, callback) => {
   const search = {
     owner: convertId(ownerID),
   };
 
-  return DomoModel.find(search).select('name age skill').exec(callback);
+  return MachineModel.find(search).select('name age skill pieces matter rate').exec(callback);
 };
 
-DomoModel = mongoose.model('Domo', DomoSchema);
+MachineModel = mongoose.model('Machine', MachineSchema);
 
-module.exports.DomoModel = DomoModel;
-module.exports.DomoSchema = DomoSchema;
+module.exports.MachineModel = MachineModel;
+module.exports.MachineSchema = MachineSchema;
