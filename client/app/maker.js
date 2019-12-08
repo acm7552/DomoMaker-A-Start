@@ -37,6 +37,7 @@ const MachineForm = (props) => {
 };
 
 const MachineList = function(props) {
+    console.log(props);
     if(props.machines.length === 0) {
         return (
         <div className="machineList">
@@ -64,7 +65,7 @@ const MachineList = function(props) {
     );
 };
 
-const loadMachinessFromServer = () => {
+const loadMachinesFromServer = () => {
     sendAjax('GET', '/getMachines', null, (data) => {
         ReactDOM.render(
         <MachineList machines={data.machines} />, document.querySelector("#machines")

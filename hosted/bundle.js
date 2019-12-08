@@ -51,6 +51,7 @@ var MachineForm = function MachineForm(props) {
 };
 
 var MachineList = function MachineList(props) {
+    console.log(props);
     if (props.machines.length === 0) {
         return React.createElement(
             "div",
@@ -97,7 +98,7 @@ var MachineList = function MachineList(props) {
     );
 };
 
-var loadMachinessFromServer = function loadMachinessFromServer() {
+var loadMachinesFromServer = function loadMachinesFromServer() {
     sendAjax('GET', '/getMachines', null, function (data) {
         ReactDOM.render(React.createElement(MachineList, { machines: data.machines }), document.querySelector("#machines"));
     });

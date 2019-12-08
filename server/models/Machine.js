@@ -44,16 +44,19 @@ const MachineSchema = new mongoose.Schema({
     type: Number,
     min: 0,
     required: true,
+    default: 0,
   },
   matter: {
     type: Number,
     min: 0,
     required: true,
+    default: 0,
   },
   rate: {
     type: Number,
     min: 0,
     required: true,
+    default: 0,
   },
 
 
