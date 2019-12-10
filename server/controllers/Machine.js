@@ -59,6 +59,29 @@ const getMachines = (request, response) => {
   });
 };
 
+const deleteMachine = (request, response) => {
+    const req = request;
+    const res = response;
+    
+    console.log("Inside deleteMachine in controller");
+    
+    return Machine.MachineModel.findByOwner(req.session.account._id, (err, docs) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occured' });
+    }
+    
+    docs.pop();
+
+    return res.json({ machines: docs });
+  });
+    
+    
+    
+    
+}
+
 module.exports.makerPage = makerPage;
 module.exports.getMachines = getMachines;
 module.exports.makeMachine = makeMachine;
+module.exports.deleteMachine = deleteMachine;

@@ -67,6 +67,10 @@ nav:nth-child(1) {
     color: white;
 }
 
+#disableMaker {
+    width: 900px;
+}
+
 .machineForm input[type=text] {
     float:left;
 }

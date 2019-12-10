@@ -17,7 +17,41 @@ var handleMachine = function handleMachine(e) {
     return false;
 };
 
+//deleting a machine
+var deleteMachine = function deleteMachine(e) {
+    e.preventDefault();
+
+    console.log("Inside delete in maker.js");
+
+    $("#domoMessage").animate({ width: 'hide' }, 350);
+
+    sendAjax('POST', $("#machineForm").attr("action"), $("#machineForm").serialize(), function () {
+        loadMachinesFromServer();
+    });
+
+    return false;
+};
+
 var MachineForm = function MachineForm(props) {
+    if (props.machines.length > 5) {
+        return React.createElement(
+            "form",
+            { id: "machineForm",
+                onSubmit: deleteMachine,
+                name: "machineForm",
+                action: "/maker",
+                method: "POST",
+                className: "machineForm"
+            },
+            React.createElement(
+                "label",
+                { id: "disableMaker" },
+                "You have reached the alloted maximum structures. Either consolidate or increase your maximum. "
+            ),
+            React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
+            React.createElement("input", { className: "makeMachineSubmit", type: "submit", value: "Delete Machine" })
+        );
+    }
     return React.createElement(
         "form",
         { id: "machineForm",
@@ -51,7 +85,7 @@ var MachineForm = function MachineForm(props) {
 };
 
 var MachineList = function MachineList(props) {
-    console.log(props);
+    //console.log(props);
     if (props.machines.length === 0) {
         return React.createElement(
             "div",
@@ -101,13 +135,15 @@ var MachineList = function MachineList(props) {
 var loadMachinesFromServer = function loadMachinesFromServer() {
     sendAjax('GET', '/getMachines', null, function (data) {
         ReactDOM.render(React.createElement(MachineList, { machines: data.machines }), document.querySelector("#machines"));
+
+        ReactDOM.render(React.createElement(MachineForm, { machines: data.machines }), document.querySelector("#makeMachine"));
     });
 };
 
-var setup = function setup(csrf) {
-    ReactDOM.render(React.createElement(MachineForm, { csrf: csrf }), document.querySelector("#makeMachine"));
+var setup = function setup(csrf, data) {
+    ReactDOM.render(React.createElement(MachineForm, { csrf: csrf, machines: [] }), document.querySelector("#makeMachine"));
 
-    ReactDOM.render(React.createElement(MachineList, { Machines: [] }), document.querySelector("#machines"));
+    ReactDOM.render(React.createElement(MachineList, { machines: [] }), document.querySelector("#machines"));
 
     loadMachinesFromServer();
 };

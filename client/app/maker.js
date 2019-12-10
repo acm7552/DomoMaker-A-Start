@@ -8,6 +8,7 @@ const handleMachine = (e) => {
         return false;
     }
     
+    
     sendAjax('POST', $("#machineForm").attr("action"), $("#machineForm").serialize(), function() {
         loadMachinesFromServer();
     });
@@ -15,7 +16,43 @@ const handleMachine = (e) => {
     return false;
 };
 
-const MachineForm = (props) => {
+//deleting a machine
+const deleteMachine = (e) => {
+    e.preventDefault();
+    
+    console.log("Inside delete in maker.js");
+    
+    $("#domoMessage").animate({width: 'hide'}, 350);
+    
+    
+    sendAjax('POST', $("#machineForm").attr("action"), $("#machineForm").serialize(), function() {
+        loadMachinesFromServer();
+    });
+    
+    return false;
+};
+
+
+
+const MachineForm = function(props) {
+    if(props.machines.length > 5) {
+        return (
+        <form id="machineForm"
+        onSubmit={deleteMachine}
+        name="machineForm"
+        action="/maker"
+        method="POST"
+        className="machineForm"
+        >
+            <label id="disableMaker">You have reached the alloted maximum structures. Either consolidate or increase your maximum. </label>   
+            <input type="hidden" name="_csrf" value={props.csrf} />
+            <input className="makeMachineSubmit" type="submit"  value="Delete Machine" /> 
+            
+        </form>
+            
+        );
+        
+    }
     return (
     <form id="machineForm"
         onSubmit={handleMachine}
@@ -34,10 +71,13 @@ const MachineForm = (props) => {
             <input className="makeMachineSubmit" type="submit" value="Produce Machine" />      
         </form>
     );
+    
+    
+    
 };
 
 const MachineList = function(props) {
-    console.log(props);
+    //console.log(props);
     if(props.machines.length === 0) {
         return (
         <div className="machineList">
@@ -70,16 +110,20 @@ const loadMachinesFromServer = () => {
         ReactDOM.render(
         <MachineList machines={data.machines} />, document.querySelector("#machines")
         );
+        
+        ReactDOM.render(
+        <MachineForm machines={data.machines} />, document.querySelector("#makeMachine")
+        );
     });
 };
 
-const setup = function(csrf) {
+const setup = function(csrf, data) {
     ReactDOM.render(
-    <MachineForm csrf={csrf} />, document.querySelector("#makeMachine")
+    <MachineForm csrf={csrf} machines={[]}/>, document.querySelector("#makeMachine")
     );
     
     ReactDOM.render(
-    <MachineList Machines={[]} />, document.querySelector("#machines")
+    <MachineList machines={[]} />, document.querySelector("#machines")
     );
     
     loadMachinesFromServer();    
