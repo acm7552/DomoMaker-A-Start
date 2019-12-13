@@ -79,6 +79,16 @@ MachineSchema.statics.findByOwner = (ownerID, callback) => {
   return MachineModel.find(search).select('name age skill pieces matter rate').exec(callback);
 };
 
+MachineSchema.statics.findByName = (name, callback) => {
+    const search = {
+        name,
+    };
+    
+   return MachineModel.findOne(search, callback);
+};
+
+
+
 MachineModel = mongoose.model('Machine', MachineSchema);
 
 module.exports.MachineModel = MachineModel;

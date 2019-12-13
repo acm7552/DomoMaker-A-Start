@@ -1,3 +1,8 @@
+const theMachines = function(docs) {
+    return docs;
+}
+
+
 const handleMachine = (e) => {
     e.preventDefault();
     
@@ -7,7 +12,7 @@ const handleMachine = (e) => {
         handleError("All fields are required.");
         return false;
     }
-    
+
     
     sendAjax('POST', $("#machineForm").attr("action"), $("#machineForm").serialize(), function() {
         loadMachinesFromServer();
@@ -22,11 +27,9 @@ const deleteMachine = (e) => {
     
     console.log("Inside delete in maker.js");
     
-    $("#domoMessage").animate({width: 'hide'}, 350);
     
-    
-    sendAjax('POST', $("#machineForm").attr("action"), $("#machineForm").serialize(), function() {
-        loadMachinesFromServer();
+    sendAjax('GET', $("#machineForm").attr("action"), $("#machineForm").serialize(), function() {
+        //loadMachinesFromServer();
     });
     
     return false;
@@ -40,13 +43,13 @@ const MachineForm = function(props) {
         <form id="machineForm"
         onSubmit={deleteMachine}
         name="machineForm"
-        action="/maker"
-        method="POST"
+        action="/delete"
+        method="GET"
         className="machineForm"
         >
             <label id="disableMaker">You have reached the alloted maximum structures. Either consolidate or increase your maximum. </label>   
             <input type="hidden" name="_csrf" value={props.csrf} />
-            <input className="makeMachineSubmit" type="submit"  value="Delete Machine" /> 
+            <input className="deleteMachineSubmit" type="submit"  value="Delete Machine" /> 
             
         </form>
             
@@ -77,7 +80,7 @@ const MachineForm = function(props) {
 };
 
 const MachineList = function(props) {
-    //console.log(props);
+    console.log(props);
     if(props.machines.length === 0) {
         return (
         <div className="machineList">
@@ -93,7 +96,9 @@ const MachineList = function(props) {
             <h3 className="machineName"> Name: {machine.name} </h3>
             <h3 className="machineAge"> Age: {machine.age}</h3>
             <h3 className="machineSkill"> Skill: {machine.skill}</h3>
-            
+            <h3 className="machinePiece"> Pieces: {machine.pieces}</h3>
+            <h3 className="machineMatter"> Matter: {machine.matter}</h3>
+            <h3 className="machineRate"> Rate: {machine.rate}</h3>
             </div>
         );
     });
@@ -105,8 +110,20 @@ const MachineList = function(props) {
     );
 };
 
+//This panel is viewed when the user opens an individual machine
+const MachinePanel = function(props){
+    return (
+    <div className="machinePanel">
+        
+        </div>)
+}
+
 const loadMachinesFromServer = () => {
+    console.log("inside loadMachinesFromServer");
     sendAjax('GET', '/getMachines', null, (data) => {
+        
+        console.log("Inside the sendAjax of loadMachinesFromServer");
+        
         ReactDOM.render(
         <MachineList machines={data.machines} />, document.querySelector("#machines")
         );
@@ -114,10 +131,13 @@ const loadMachinesFromServer = () => {
         ReactDOM.render(
         <MachineForm machines={data.machines} />, document.querySelector("#makeMachine")
         );
+        
+        //storeMachines(data.machines);
     });
 };
 
-const setup = function(csrf, data) {
+const setup = function(csrf) {
+    console.log("inside setup");
     ReactDOM.render(
     <MachineForm csrf={csrf} machines={[]}/>, document.querySelector("#makeMachine")
     );
@@ -125,16 +145,19 @@ const setup = function(csrf, data) {
     ReactDOM.render(
     <MachineList machines={[]} />, document.querySelector("#machines")
     );
+     
+    loadMachinesFromServer(); 
     
-    loadMachinesFromServer();    
 };
 
 const getToken = () => {
+    console.log("getToken");
     sendAjax('GET', '/getToken', null, (result) => {
         setup(result.csrfToken);
     });
 };
 
 $(document).ready(function() {
+    console.log("Document loaded");
     getToken();
 });

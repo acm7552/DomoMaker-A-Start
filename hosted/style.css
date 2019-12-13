@@ -96,6 +96,25 @@ nav:nth-child(1) {
     background-color: #338acc;
 }
 
+.deleteMachineSubmit {
+    transition: background-color 0.4s ease;
+    display: inline;
+    width: 90px;
+    background-color: #55acee;
+    border-radius: 2px;
+    color: white;
+    text-decoration: none;
+}
+
+.deleteMachineSubmit:link, .deleteMachineSubmit:visited, .deleteMachineSubmit:hover, .deleteMachineSubmit:active {
+    color: white;
+}
+
+.deleteMachineSubmit:hover {
+    transition: background-color 0.4s ease;
+    background-color: #994446;
+}
+
 .mainForm {
     height: 300px;
     width: 350px;
@@ -267,6 +286,35 @@ h3.machineSkill {
     padding-right: 40px;
     font-size: 1.5em;
 }
+
+h3.machinePiece {
+    float:right;
+    text-align: left;
+    width: 100px;
+    font-weight: bold;
+    padding-right: 40px;
+    font-size: 1.5em;
+}
+
+h3.machineMatter {
+    float:right;
+    text-align: left;
+    width: 100px;
+    font-weight: bold;
+    padding-right: 40px;
+    font-size: 1.5em;
+}
+
+h3.machineRate {
+    float:right;
+    text-align: left;
+    width: 100px;
+    font-weight: bold;
+    padding-right: 40px;
+    font-size: 1.5em;
+}
+
+
 
 .machine:first-child {
     margin-top: 10px;

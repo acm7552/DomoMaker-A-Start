@@ -1,5 +1,9 @@
 "use strict";
 
+var theMachines = function theMachines(docs) {
+    return docs;
+};
+
 var handleMachine = function handleMachine(e) {
     e.preventDefault();
 
@@ -23,10 +27,8 @@ var deleteMachine = function deleteMachine(e) {
 
     console.log("Inside delete in maker.js");
 
-    $("#domoMessage").animate({ width: 'hide' }, 350);
-
-    sendAjax('POST', $("#machineForm").attr("action"), $("#machineForm").serialize(), function () {
-        loadMachinesFromServer();
+    sendAjax('GET', $("#machineForm").attr("action"), $("#machineForm").serialize(), function () {
+        //loadMachinesFromServer();
     });
 
     return false;
@@ -39,8 +41,8 @@ var MachineForm = function MachineForm(props) {
             { id: "machineForm",
                 onSubmit: deleteMachine,
                 name: "machineForm",
-                action: "/maker",
-                method: "POST",
+                action: "/delete",
+                method: "GET",
                 className: "machineForm"
             },
             React.createElement(
@@ -49,7 +51,7 @@ var MachineForm = function MachineForm(props) {
                 "You have reached the alloted maximum structures. Either consolidate or increase your maximum. "
             ),
             React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-            React.createElement("input", { className: "makeMachineSubmit", type: "submit", value: "Delete Machine" })
+            React.createElement("input", { className: "deleteMachineSubmit", type: "submit", value: "Delete Machine" })
         );
     }
     return React.createElement(
@@ -85,7 +87,7 @@ var MachineForm = function MachineForm(props) {
 };
 
 var MachineList = function MachineList(props) {
-    //console.log(props);
+    console.log(props);
     if (props.machines.length === 0) {
         return React.createElement(
             "div",
@@ -121,6 +123,24 @@ var MachineList = function MachineList(props) {
                 { className: "machineSkill" },
                 " Skill: ",
                 machine.skill
+            ),
+            React.createElement(
+                "h3",
+                { className: "machinePiece" },
+                " Pieces: ",
+                machine.pieces
+            ),
+            React.createElement(
+                "h3",
+                { className: "machineMatter" },
+                " Matter: ",
+                machine.matter
+            ),
+            React.createElement(
+                "h3",
+                { className: "machineRate" },
+                " Rate: ",
+                machine.rate
             )
         );
     });
@@ -132,15 +152,27 @@ var MachineList = function MachineList(props) {
     );
 };
 
+//This panel is viewed when the user opens an individual machine
+var MachinePanel = function MachinePanel(props) {
+    return React.createElement("div", { className: "machinePanel" });
+};
+
 var loadMachinesFromServer = function loadMachinesFromServer() {
+    console.log("inside loadMachinesFromServer");
     sendAjax('GET', '/getMachines', null, function (data) {
+
+        console.log("Inside the sendAjax of loadMachinesFromServer");
+
         ReactDOM.render(React.createElement(MachineList, { machines: data.machines }), document.querySelector("#machines"));
 
         ReactDOM.render(React.createElement(MachineForm, { machines: data.machines }), document.querySelector("#makeMachine"));
+
+        //storeMachines(data.machines);
     });
 };
 
-var setup = function setup(csrf, data) {
+var setup = function setup(csrf) {
+    console.log("inside setup");
     ReactDOM.render(React.createElement(MachineForm, { csrf: csrf, machines: [] }), document.querySelector("#makeMachine"));
 
     ReactDOM.render(React.createElement(MachineList, { machines: [] }), document.querySelector("#machines"));
@@ -149,12 +181,14 @@ var setup = function setup(csrf, data) {
 };
 
 var getToken = function getToken() {
+    console.log("getToken");
     sendAjax('GET', '/getToken', null, function (result) {
         setup(result.csrfToken);
     });
 };
 
 $(document).ready(function () {
+    console.log("Document loaded");
     getToken();
 });
 "use strict";
