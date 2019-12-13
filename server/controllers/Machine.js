@@ -3,14 +3,14 @@ const models = require('../models');
 const Machine = models.Machine;
 
 
-const defaultData = {
+/*const defaultData = {
     name: "Blank Slate",
     age: 0,
     skill: 0,
     pieces: 0,
     matter: 0,
     rate: 0,
-}
+}*/
 
 //let lastAdded = new Machine(defaultData);
 
