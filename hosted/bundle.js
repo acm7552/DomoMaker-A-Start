@@ -132,7 +132,7 @@ var MachineForm = function MachineForm(props) {
 };
 
 var MachineList = function MachineList(props) {
-    console.log(props);
+    //console.log(props);
     if (props.machines.length === 0) {
         return React.createElement(
             "div",

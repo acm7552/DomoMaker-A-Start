@@ -116,7 +116,7 @@ const MachineForm = function(props) {
 };
 
 const MachineList = function(props) {
-    console.log(props);
+    //console.log(props);
     if(props.machines.length === 0) {
         return (
         <div className="machineList">
