@@ -6,6 +6,7 @@ var theMachines = function theMachines(docs) {
 
 var currentInterval = void 0;
 var buildMaximum = void 0;
+var totalRate = void 0;
 
 var handleMachine = function handleMachine(e) {
     e.preventDefault();
@@ -83,7 +84,13 @@ var MachineForm = function MachineForm(props) {
                 "You have reached the alloted maximum structures. Either consolidate or increase your maximum. "
             ),
             React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-            React.createElement("input", { className: "deleteMachineSubmit", type: "submit", value: "Delete Machine" })
+            React.createElement("input", { className: "deleteMachineSubmit", type: "submit", value: "Delete Machine" }),
+            React.createElement(
+                "label",
+                { id: "disableMaker" },
+                "Your production value is currently ",
+                totalRate
+            )
         );
     }
     return React.createElement(
@@ -114,7 +121,13 @@ var MachineForm = function MachineForm(props) {
         ),
         React.createElement("input", { id: "machineSkill", type: "text", name: "skill", placeholder: "Skill Level" }),
         React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-        React.createElement("input", { className: "makeMachineSubmit", type: "submit", value: "Produce Machine" })
+        React.createElement("input", { className: "makeMachineSubmit", type: "submit", value: "Produce Machine" }),
+        React.createElement(
+            "label",
+            { id: "totalRate" },
+            "Your production value is currently ",
+            totalRate
+        )
     );
 };
 
@@ -257,6 +270,7 @@ $(document).ready(function () {
 var runMachines = function runMachines(machines) {
     clearInterval(currentInterval);
     currentInterval = setInterval(function () {
+        totalRate = 0;
         for (var i = 0; i < machines.length; i++) {
             if (machines[i].age < 100) {
                 var newMatter = Math.floor(machines[i].pieces / 20);
@@ -266,6 +280,7 @@ var runMachines = function runMachines(machines) {
                 machines[i].rate = newRate;
                 machines[i].pieces += newRate;
                 machines[i].age++;
+                totalRate += machines[i].rate;
             }
         }
 

@@ -4,6 +4,7 @@ const theMachines = function(docs) {
 
 let currentInterval;
 let buildMaximum;
+let totalRate;
 
 const handleMachine = (e) => {
     e.preventDefault();
@@ -83,6 +84,7 @@ const MachineForm = function(props) {
             <label id="disableMaker">You have reached the alloted maximum structures. Either consolidate or increase your maximum. </label>   
             <input type="hidden" name="_csrf" value={props.csrf} />
             <input className="deleteMachineSubmit" type="submit"  value="Delete Machine" /> 
+            <label id="disableMaker">Your production value is currently {totalRate}</label>
             
         </form>
             
@@ -105,6 +107,7 @@ const MachineForm = function(props) {
             <input id="machineSkill" type="text" name="skill" placeholder="Skill Level" />
             <input type="hidden" name="_csrf" value={props.csrf} />
             <input className="makeMachineSubmit" type="submit" value="Produce Machine" />      
+            <label id="totalRate">Your production value is currently {totalRate}</label>
         </form>
     );
     
@@ -243,6 +246,7 @@ $(document).ready(function() {
 const runMachines = function(machines){
     clearInterval(currentInterval);
     currentInterval = setInterval(() => {
+        totalRate = 0;
         for (let i = 0; i< machines.length; i++)
             {
                 if(machines[i].age < 100)
@@ -254,6 +258,7 @@ const runMachines = function(machines){
                 machines[i].rate = newRate;
                 machines[i].pieces+= newRate;
                 machines[i].age++;
+                totalRate+= machines[i].rate;
                     }
         
                 
