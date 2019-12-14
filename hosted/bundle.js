@@ -4,6 +4,9 @@ var theMachines = function theMachines(docs) {
     return docs;
 };
 
+var currentInterval = void 0;
+var buildMaximum = void 0;
+
 var handleMachine = function handleMachine(e) {
     e.preventDefault();
 
@@ -25,11 +28,15 @@ var handleMachine = function handleMachine(e) {
 var deleteMachine = function deleteMachine(e) {
     e.preventDefault();
 
-    console.log("Inside delete in maker.js");
+    //console.log("Inside delete in maker.js");
+
 
     sendAjax('GET', $("#machineForm").attr("action"), $("#machineForm").serialize(), function () {
         loadMachinesFromServer();
     });
+
+    buildMaximum++;
+    console.log(buildMaximum);
 
     return false;
 };
@@ -50,7 +57,7 @@ var deleteMachineFromEntry = function deleteMachineFromEntry(e) {
 
 //updates to the database every 10 seconds
 var updateData = function updateData() {
-    console.log("Inside updateData");
+    //console.log("Inside updateData");
 
     sendAjax('POST', '/update', $("#machineForm").serialize(), function () {
         loadMachinesFromServer();
@@ -60,7 +67,7 @@ var updateData = function updateData() {
 };
 
 var MachineForm = function MachineForm(props) {
-    if (props.machines.length > 5) {
+    if (props.machines.length > buildMaximum) {
         return React.createElement(
             "form",
             { id: "machineForm",
@@ -129,7 +136,7 @@ var MachineList = function MachineList(props) {
         return React.createElement(
             "div",
             { key: machine._id, className: "machine" },
-            React.createElement("img", { src: "/assets/img/domoface.jpeg", alt: "domo face", className: "domoFace" }),
+            React.createElement("img", { src: "/assets/img/gear.png", alt: "domo face", className: "domoFace" }),
             React.createElement(
                 "h3",
                 { className: "machineName" },
@@ -167,16 +174,17 @@ var MachineList = function MachineList(props) {
                 " Rate: ",
                 machine.rate
             ),
+            React.createElement("h3", { className: "machineRate" }),
             React.createElement(
                 "form",
                 { id: "deleteForm",
-                    onSubmit: deleteMachineFromEntry,
+                    onSubmit: deleteMachine,
                     name: "deleteForm",
                     action: "/delete",
                     method: "GET",
                     className: "deleteForm"
                 },
-                React.createElement("input", { className: "deleteMachineSubmit", type: "submit", value: "Delete Machine" })
+                React.createElement("input", { className: "deleteMachineSubmit", type: "submit", value: "Convert" })
             )
         );
     });
@@ -198,7 +206,8 @@ var launchMachinesFromServer = function launchMachinesFromServer() {
     console.log("inside LaunchMachinesFromServer");
     sendAjax('GET', '/getMachines', null, function (data) {
 
-        console.log("Inside the sendAjax of launchMachinesFromServer");
+        //console.log("Inside the sendAjax of launchMachinesFromServer");
+
 
         ReactDOM.render(React.createElement(MachineList, { machines: data.machines }), document.querySelector("#machines"));
 
@@ -209,10 +218,10 @@ var launchMachinesFromServer = function launchMachinesFromServer() {
 };
 
 var loadMachinesFromServer = function loadMachinesFromServer() {
-    console.log("inside loadMachinesFromServer");
+    //console.log("inside loadMachinesFromServer");
     sendAjax('GET', '/getMachines', null, function (data) {
 
-        console.log("Inside the sendAjax of loadMachinesFromServer");
+        //console.log("Inside the sendAjax of loadMachinesFromServer");
 
         data.machines = runMachines(data.machines);
 
@@ -224,7 +233,7 @@ var loadMachinesFromServer = function loadMachinesFromServer() {
 
 //Renders the page when loaded
 var setup = function setup(csrf) {
-    console.log("inside setup");
+    //console.log("inside setup");
     ReactDOM.render(React.createElement(MachineForm, { csrf: csrf, machines: [] }), document.querySelector("#makeMachine"));
 
     ReactDOM.render(React.createElement(MachineList, { machines: [] }), document.querySelector("#machines"));
@@ -233,29 +242,36 @@ var setup = function setup(csrf) {
 };
 
 var getToken = function getToken() {
-    console.log("getToken");
+    //console.log("getToken");
     sendAjax('GET', '/getToken', null, function (result) {
         setup(result.csrfToken);
     });
 };
 
 $(document).ready(function () {
-    console.log("Document loaded");
+    //console.log("Document loaded");
+    buildMaximum = 5;
     getToken();
 });
 
 var runMachines = function runMachines(machines) {
-    setInterval(function () {
+    clearInterval(currentInterval);
+    currentInterval = setInterval(function () {
         for (var i = 0; i < machines.length; i++) {
-            machines[i].pieces++;
-            console.log(machines[i].pieces);
+            if (machines[i].age < 100) {
+                var newMatter = Math.floor(machines[i].pieces / 20);
+                var newRate = Math.floor(machines[i].matter / 10);
+                machines[i].pieces += machines[i].skill;
+                machines[i].matter += newMatter;
+                machines[i].rate = newRate;
+                machines[i].pieces += newRate;
+                machines[i].age++;
+            }
         }
 
-        console.log(machines);
+        //console.log(machines);
 
         ReactDOM.render(React.createElement(MachineList, { machines: machines }), document.querySelector("#machines"));
-
-        ReactDOM.render(React.createElement(MachineForm, { machines: machines }), document.querySelector("#makeMachine"));
 
         //updateData();
     }, 1000);

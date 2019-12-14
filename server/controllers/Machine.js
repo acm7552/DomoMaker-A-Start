@@ -109,7 +109,7 @@ const updateData = (request, response) => {
     return res.status(400).json({ error: 'All fields are required.' });
   }*/
 
-  console.log('Inside updateData in controller');
+  //console.log('Inside updateData in controller');
 
   Machine.MachineModel.updateMachine(req.session.account._id, req.body.rate, (err) => {
     if (err) {

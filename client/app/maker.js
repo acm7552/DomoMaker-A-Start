@@ -2,6 +2,8 @@ const theMachines = function(docs) {
     return docs;
 }
 
+let currentInterval;
+let buildMaximum;
 
 const handleMachine = (e) => {
     e.preventDefault();
@@ -25,12 +27,15 @@ const handleMachine = (e) => {
 const deleteMachine = (e) => {
     e.preventDefault();
     
-    console.log("Inside delete in maker.js");
+    //console.log("Inside delete in maker.js");
     
     
     sendAjax('GET', $("#machineForm").attr("action"), $("#machineForm").serialize(), function() {
         loadMachinesFromServer();
     });
+    
+    buildMaximum++;
+    console.log(buildMaximum);
     
     return false;
 };
@@ -52,7 +57,7 @@ const deleteMachineFromEntry = (e) => {
 
 //updates to the database every 10 seconds
 const updateData = () => {
-    console.log("Inside updateData");
+    //console.log("Inside updateData");
     
     sendAjax('POST', '/update', $("#machineForm").serialize(),
         function() {
@@ -66,7 +71,7 @@ const updateData = () => {
 
 
 const MachineForm = function(props) {
-    if(props.machines.length > 5) {
+    if(props.machines.length > buildMaximum) {
         return (
         <form id="machineForm"
         onSubmit={deleteMachine}
@@ -120,22 +125,23 @@ const MachineList = function(props) {
     const machineNodes = props.machines.map(function(machine) {
         return (
         <div key={machine._id} className="machine">
-            <img src="/assets/img/domoface.jpeg" alt="domo face" className="domoFace" />
+            <img src="/assets/img/gear.png" alt="domo face" className="domoFace" />
             <h3 className="machineName"> Name: {machine.name} </h3>
             <h3 className="machineAge"> Age: {machine.age}</h3>
             <h3 className="machineSkill"> Skill: {machine.skill}</h3>
             <h3 className="machinePiece"> Pieces: {machine.pieces}</h3>
             <h3 className="machineMatter"> Matter: {machine.matter}</h3>
             <h3 className="machineRate"> Rate: {machine.rate}</h3>
+            <h3 className="machineRate" ></h3>
                 
             <form id="deleteForm"
-            onSubmit={deleteMachineFromEntry}
+            onSubmit={deleteMachine}
             name="deleteForm"
             action="/delete"
             method="GET"
             className="deleteForm"
             >
-                <input className="deleteMachineSubmit" type="submit"  value="Delete Machine" /> 
+                <input className="deleteMachineSubmit" type="submit"  value="Convert" /> 
             </form>
                 
                 
@@ -164,7 +170,7 @@ const launchMachinesFromServer = () => {
     console.log("inside LaunchMachinesFromServer");
     sendAjax('GET', '/getMachines', null, (data) => {
         
-        console.log("Inside the sendAjax of launchMachinesFromServer");
+        //console.log("Inside the sendAjax of launchMachinesFromServer");
         
         
         
@@ -185,10 +191,10 @@ const launchMachinesFromServer = () => {
 
 
 const loadMachinesFromServer = () => {
-    console.log("inside loadMachinesFromServer");
+    //console.log("inside loadMachinesFromServer");
     sendAjax('GET', '/getMachines', null, (data) => {
         
-        console.log("Inside the sendAjax of loadMachinesFromServer");
+        //console.log("Inside the sendAjax of loadMachinesFromServer");
         
         data.machines = runMachines(data.machines);
         
@@ -208,7 +214,7 @@ const loadMachinesFromServer = () => {
 
 //Renders the page when loaded
 const setup = function(csrf) {
-    console.log("inside setup");
+    //console.log("inside setup");
     ReactDOM.render(
     <MachineForm csrf={csrf} machines={[]}/>, document.querySelector("#makeMachine")
     );
@@ -222,35 +228,43 @@ const setup = function(csrf) {
 };
 
 const getToken = () => {
-    console.log("getToken");
+    //console.log("getToken");
     sendAjax('GET', '/getToken', null, (result) => {
         setup(result.csrfToken);
     });
 };
 
 $(document).ready(function() {
-    console.log("Document loaded");
+    //console.log("Document loaded");
+    buildMaximum = 5;
     getToken();
 });
 
 const runMachines = function(machines){
-    setInterval(function(){
+    clearInterval(currentInterval);
+    currentInterval = setInterval(() => {
         for (let i = 0; i< machines.length; i++)
             {
-                machines[i].pieces++;
-                console.log(machines[i].pieces);
+                if(machines[i].age < 100)
+                    {
+                let newMatter = Math.floor(machines[i].pieces / 20);
+                let newRate = Math.floor(machines[i].matter / 10);
+                machines[i].pieces+=machines[i].skill;
+                machines[i].matter+=newMatter;
+                machines[i].rate = newRate;
+                machines[i].pieces+= newRate;
+                machines[i].age++;
+                    }
+        
+                
             }
         
-        console.log(machines);
+        //console.log(machines);
             
         ReactDOM.render(
         <MachineList machines={machines} />, document.querySelector("#machines")
         );
-        
-        ReactDOM.render(
-        <MachineForm machines={machines} />, document.querySelector("#makeMachine")
-        );
-        
+               
         
         //updateData();
     }, 1000);
