@@ -52,8 +52,8 @@ nav:nth-child(1) {
 
 .machineForm {
     border: 2px solid #000000;
-    height: 35px;
-    width: 900px;
+    height: 75px;
+    width: 1100px;
     margin-top:0px;
     padding-top:10px;
     background-color: #000000;
@@ -83,7 +83,7 @@ nav:nth-child(1) {
 .makeMachineSubmit {
     transition: background-color 0.4s ease;
     display: inline;
-    width: 90px;
+    width: 160px;
     background-color: #000000;
     border-radius: 2px;
     color: white;
@@ -345,6 +345,19 @@ h3.machineRate {
   z-index: -1; 
   top: 0;
   left: 0;
+  background-color: #111;
+  overflow-x: hidden; 
+  padding-top: 20px;
+}
+
+.sidenavRight {
+  height: 100%; 
+  width: 160px;
+  position: fixed; 
+  z-index: -1; 
+  top: 0;
+  left: 0;
+  float: right;
   background-color: #111;
   overflow-x: hidden; 
   padding-top: 20px;
