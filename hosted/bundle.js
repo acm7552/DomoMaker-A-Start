@@ -21,14 +21,39 @@ var handleMachine = function handleMachine(e) {
     return false;
 };
 
-//deleting a machine
+//deletes the first machine, the oldest existing one
 var deleteMachine = function deleteMachine(e) {
     e.preventDefault();
 
     console.log("Inside delete in maker.js");
 
     sendAjax('GET', $("#machineForm").attr("action"), $("#machineForm").serialize(), function () {
-        //loadMachinesFromServer();
+        loadMachinesFromServer();
+    });
+
+    return false;
+};
+
+//developing way to delete particular machine
+var deleteMachineFromEntry = function deleteMachineFromEntry(e) {
+    e.preventDefault();
+
+    //console.log("Inside deleteFromEntry in maker.js");
+
+
+    sendAjax('GET', $("#deleteForm").attr("action"), $("#deleteForm").serialize(), function () {
+        loadMachinesFromServer();
+    });
+
+    return false;
+};
+
+//updates to the database every 10 seconds
+var updateData = function updateData() {
+    console.log("Inside updateData");
+
+    sendAjax('POST', '/update', $("#machineForm").serialize(), function () {
+        loadMachinesFromServer();
     });
 
     return false;
@@ -141,6 +166,17 @@ var MachineList = function MachineList(props) {
                 { className: "machineRate" },
                 " Rate: ",
                 machine.rate
+            ),
+            React.createElement(
+                "form",
+                { id: "deleteForm",
+                    onSubmit: deleteMachineFromEntry,
+                    name: "deleteForm",
+                    action: "/delete",
+                    method: "GET",
+                    className: "deleteForm"
+                },
+                React.createElement("input", { className: "deleteMachineSubmit", type: "submit", value: "Delete Machine" })
             )
         );
     });
@@ -163,14 +199,15 @@ var loadMachinesFromServer = function loadMachinesFromServer() {
 
         console.log("Inside the sendAjax of loadMachinesFromServer");
 
+        runMachines(data.machines);
+
         ReactDOM.render(React.createElement(MachineList, { machines: data.machines }), document.querySelector("#machines"));
 
         ReactDOM.render(React.createElement(MachineForm, { machines: data.machines }), document.querySelector("#makeMachine"));
-
-        //storeMachines(data.machines);
     });
 };
 
+//Renders the page when loaded
 var setup = function setup(csrf) {
     console.log("inside setup");
     ReactDOM.render(React.createElement(MachineForm, { csrf: csrf, machines: [] }), document.querySelector("#makeMachine"));
@@ -191,6 +228,23 @@ $(document).ready(function () {
     console.log("Document loaded");
     getToken();
 });
+
+var runMachines = function runMachines(machines) {
+    setInterval(function () {
+        for (var i = 0; i < machines.length; i++) {
+            machines[i].pieces++;
+            console.log(machines[i].pieces);
+        }
+
+        console.log(machines);
+
+        ReactDOM.render(React.createElement(MachineList, { machines: machines }), document.querySelector("#machines"));
+
+        ReactDOM.render(React.createElement(MachineForm, { machines: machines }), document.querySelector("#makeMachine"));
+
+        //updateData();
+    }, 1200);
+};
 "use strict";
 
 var handleError = function handleError(message) {

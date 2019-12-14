@@ -71,6 +71,7 @@ MachineSchema.statics.toAPI = (doc) => ({
   rate: doc.rate,
 });
 
+// Finds machines by user
 MachineSchema.statics.findByOwner = (ownerID, callback) => {
   const search = {
     owner: convertId(ownerID),
@@ -79,14 +80,30 @@ MachineSchema.statics.findByOwner = (ownerID, callback) => {
   return MachineModel.find(search).select('name age skill pieces matter rate').exec(callback);
 };
 
-MachineSchema.statics.findByName = (name, callback) => {
-    const search = {
-        name,
-    };
-    
-   return MachineModel.findOne(search, callback);
+// Deletes the first machine owned by the user
+MachineSchema.statics.deleteFirstByOwner = (ownerID, callback) => {
+  const search = {
+    owner: convertId(ownerID),
+  };
+
+  return MachineModel.deleteOne(search, callback);
 };
 
+// Finds machine by name
+MachineSchema.statics.findByName = (name, callback) => {
+  const search = {
+    name,
+  };
+
+  return MachineModel.findOne(search, callback);
+};
+
+
+// Finds a machine by owner and updates its value
+MachineSchema.statics.updateMachine = (ownerID) => MachineModel.findOneAndUpdate(
+    { owner: convertId(ownerID) },
+    { $inc: { pieces: 1 } }
+    );
 
 
 MachineModel = mongoose.model('Machine', MachineSchema);

@@ -21,7 +21,7 @@ const handleMachine = (e) => {
     return false;
 };
 
-//deleting a machine
+//deletes the first machine, the oldest existing one
 const deleteMachine = (e) => {
     e.preventDefault();
     
@@ -29,11 +29,39 @@ const deleteMachine = (e) => {
     
     
     sendAjax('GET', $("#machineForm").attr("action"), $("#machineForm").serialize(), function() {
-        //loadMachinesFromServer();
+        loadMachinesFromServer();
     });
     
     return false;
 };
+
+//developing way to delete particular machine
+const deleteMachineFromEntry = (e) => {
+    e.preventDefault();
+    
+    //console.log("Inside deleteFromEntry in maker.js");
+    
+    
+    sendAjax('GET', $("#deleteForm").attr("action"), $("#deleteForm").serialize(), function() {
+        loadMachinesFromServer();
+    });
+    
+    return false;
+};
+
+
+//updates to the database every 10 seconds
+const updateData = () => {
+    console.log("Inside updateData");
+    
+    sendAjax('POST', '/update', $("#machineForm").serialize(),
+        function() {
+        loadMachinesFromServer();
+    });
+    
+    return false;
+};
+
 
 
 
@@ -99,6 +127,18 @@ const MachineList = function(props) {
             <h3 className="machinePiece"> Pieces: {machine.pieces}</h3>
             <h3 className="machineMatter"> Matter: {machine.matter}</h3>
             <h3 className="machineRate"> Rate: {machine.rate}</h3>
+                
+            <form id="deleteForm"
+            onSubmit={deleteMachineFromEntry}
+            name="deleteForm"
+            action="/delete"
+            method="GET"
+            className="deleteForm"
+            >
+                <input className="deleteMachineSubmit" type="submit"  value="Delete Machine" /> 
+            </form>
+                
+                
             </div>
         );
     });
@@ -124,6 +164,9 @@ const loadMachinesFromServer = () => {
         
         console.log("Inside the sendAjax of loadMachinesFromServer");
         
+        runMachines(data.machines);
+        
+        
         ReactDOM.render(
         <MachineList machines={data.machines} />, document.querySelector("#machines")
         );
@@ -132,10 +175,12 @@ const loadMachinesFromServer = () => {
         <MachineForm machines={data.machines} />, document.querySelector("#makeMachine")
         );
         
-        //storeMachines(data.machines);
+        
     });
 };
 
+
+//Renders the page when loaded
 const setup = function(csrf) {
     console.log("inside setup");
     ReactDOM.render(
@@ -145,7 +190,7 @@ const setup = function(csrf) {
     ReactDOM.render(
     <MachineList machines={[]} />, document.querySelector("#machines")
     );
-     
+    
     loadMachinesFromServer(); 
     
 };
@@ -161,3 +206,25 @@ $(document).ready(function() {
     console.log("Document loaded");
     getToken();
 });
+
+const runMachines = function(machines){
+    setInterval(function(){
+        for (let i = 0; i< machines.length; i++)
+            {
+                machines[i].pieces++;
+                console.log(machines[i].pieces);
+            }
+        
+        console.log(machines);
+            
+        ReactDOM.render(
+        <MachineList machines={machines} />, document.querySelector("#machines")
+        );
+        
+        ReactDOM.render(
+        <MachineForm machines={machines} />, document.querySelector("#makeMachine")
+        );
+        
+        //updateData();
+    }, 1200);
+};
