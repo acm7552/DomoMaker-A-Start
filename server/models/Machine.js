@@ -100,9 +100,9 @@ MachineSchema.statics.findByName = (name, callback) => {
 
 
 // Finds a machine by owner and updates its value
-MachineSchema.statics.updateMachine = (ownerID) => MachineModel.findOneAndUpdate(
+MachineSchema.statics.updateMachine = (ownerID, currentRate) => MachineModel.findOneAndUpdate(
     { owner: convertId(ownerID) },
-    { $inc: { pieces: 1 } }
+    { $inc: { pieces: currentRate } }
     );
 
 

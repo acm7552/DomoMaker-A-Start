@@ -193,13 +193,28 @@ var MachinePanel = function MachinePanel(props) {
     return React.createElement("div", { className: "machinePanel" });
 };
 
+//Ideally this only runs the runMachines once once
+var launchMachinesFromServer = function launchMachinesFromServer() {
+    console.log("inside LaunchMachinesFromServer");
+    sendAjax('GET', '/getMachines', null, function (data) {
+
+        console.log("Inside the sendAjax of launchMachinesFromServer");
+
+        ReactDOM.render(React.createElement(MachineList, { machines: data.machines }), document.querySelector("#machines"));
+
+        ReactDOM.render(React.createElement(MachineForm, { machines: data.machines }), document.querySelector("#makeMachine"));
+
+        loadMachinesFromServer();
+    });
+};
+
 var loadMachinesFromServer = function loadMachinesFromServer() {
     console.log("inside loadMachinesFromServer");
     sendAjax('GET', '/getMachines', null, function (data) {
 
         console.log("Inside the sendAjax of loadMachinesFromServer");
 
-        runMachines(data.machines);
+        data.machines = runMachines(data.machines);
 
         ReactDOM.render(React.createElement(MachineList, { machines: data.machines }), document.querySelector("#machines"));
 
@@ -214,7 +229,7 @@ var setup = function setup(csrf) {
 
     ReactDOM.render(React.createElement(MachineList, { machines: [] }), document.querySelector("#machines"));
 
-    loadMachinesFromServer();
+    launchMachinesFromServer();
 };
 
 var getToken = function getToken() {
@@ -243,7 +258,9 @@ var runMachines = function runMachines(machines) {
         ReactDOM.render(React.createElement(MachineForm, { machines: machines }), document.querySelector("#makeMachine"));
 
         //updateData();
-    }, 1200);
+    }, 1000);
+
+    return machines;
 };
 "use strict";
 

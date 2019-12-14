@@ -98,13 +98,20 @@ const getMachines = (request, response) => {
   });
 };
 
+
+// Updating the attributes of a machine
+// In this case the rate
 const updateData = (request, response) => {
   const req = request;
   const res = response;
 
+  /* if (!req.body.rate) {
+    return res.status(400).json({ error: 'All fields are required.' });
+  }*/
+
   console.log('Inside updateData in controller');
 
-  Machine.MachineModel.updateMachine(req.session.account._id, (err) => {
+  Machine.MachineModel.updateMachine(req.session.account._id, req.body.rate, (err) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occured' });

@@ -158,13 +158,39 @@ const MachinePanel = function(props){
         </div>)
 }
 
+
+//Ideally this only runs the runMachines once once
+const launchMachinesFromServer = () => {
+    console.log("inside LaunchMachinesFromServer");
+    sendAjax('GET', '/getMachines', null, (data) => {
+        
+        console.log("Inside the sendAjax of launchMachinesFromServer");
+        
+        
+        
+        ReactDOM.render(
+        <MachineList machines={data.machines} />, document.querySelector("#machines")
+        );
+        
+        ReactDOM.render(
+        <MachineForm machines={data.machines} />, document.querySelector("#makeMachine")
+        );
+        
+        loadMachinesFromServer();
+        
+        
+    });
+    
+};
+
+
 const loadMachinesFromServer = () => {
     console.log("inside loadMachinesFromServer");
     sendAjax('GET', '/getMachines', null, (data) => {
         
         console.log("Inside the sendAjax of loadMachinesFromServer");
         
-        runMachines(data.machines);
+        data.machines = runMachines(data.machines);
         
         
         ReactDOM.render(
@@ -191,7 +217,7 @@ const setup = function(csrf) {
     <MachineList machines={[]} />, document.querySelector("#machines")
     );
     
-    loadMachinesFromServer(); 
+    launchMachinesFromServer(); 
     
 };
 
@@ -225,6 +251,9 @@ const runMachines = function(machines){
         <MachineForm machines={machines} />, document.querySelector("#makeMachine")
         );
         
+        
         //updateData();
-    }, 1200);
+    }, 1000);
+    
+    return machines;
 };
